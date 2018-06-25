@@ -4,7 +4,7 @@
     <keep-alive>
       <div class="btn-wrapper">
         <router-link class="hi" to="hello">Hi</router-link>
-        <router-link class="bi" to="bye">Bi</router-link>
+        <router-link class="bi" to="bye">Bye Bye </router-link>
       </div>
       <router-view></router-view>
     </keep-alive>

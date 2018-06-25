@@ -3,10 +3,12 @@ const fs = require('fs');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const NODE_ENV = process.env.NODE_ENV;
+const NODE_ENV = process.env.NODE_ENV ? process.env.NODE_ENV : 'development';
 
 const setPath = function(folderName) {
-  return path.join(__dirname, folderName);
+  let _path = path.join(__dirname, folderName);
+  console.log(_path)
+  return _path
 }
 
 const buildingForLocal = () => {
@@ -17,7 +19,9 @@ const setPublicPath = () => {
   let env = NODE_ENV;
   if (env === 'production') {
     return 'https://your-directory/production/';
-  } else if (env === 'staging') {
+  } else if (env === 'development') {
+    return 'http://localhost:8080/';
+    } else if (env === 'staging') {
     return 'https://your-directory/staging/';
   } else {
     return '/';
@@ -37,7 +41,7 @@ const extractHTML = new HtmlWebpackPlugin({
     removeComments: true,
     removeEmptyAttributes: true
   },
-  environment: process.env.NODE_ENV,
+  environment: NODE_ENV,
   isLocalBuild: buildingForLocal(),
   imgPath: (!buildingForLocal()) ? 'assets' : 'src/assets'
 });
@@ -51,11 +55,11 @@ const config = {
   //   build: path.join(setPath('src'), 'main.js'),
   //   vendor: path.join('setPath('src'), 'vendor.js')
   // },
-  // output: {
-  //   path: buildingForLocal() ? path.resolve(__dirname) : setPath('dist'), //this one sets the path to serve
-  //   publicPath: setPublicPath(),
-  //   filename: buildingForLocal() ? 'js/[name].js' : 'js/[name].[hash].js'
-  // },
+  output: {
+    path: setPath('dist'), //this one sets the path to serve
+    publicPath: setPublicPath(),
+    filename: buildingForLocal() ? '[name].js' : '[name].[hash].js'
+  },
   
   optimization:{
     runtimeChunk: false,
@@ -69,7 +73,11 @@ const config = {
   mode: buildingForLocal() ? 'development' : 'production',
   devServer: {
     historyApiFallback: true,
-    noInfo: false
+    noInfo: false,
+    headers: {
+        "Access-Control-Allow-Origin": "*",
+    }
+
   },
   plugins: [
     extractHTML,
